@@ -1,5 +1,5 @@
-const SimpleStorage = artifacts.require('./SimpleStorage.sol');
+const LinkedList = artifacts.require('./LinkedList.sol');
 
 module.exports = (deployer) => {
-    deployer.deploy(SimpleStorage);
+    deployer.deploy(LinkedList);
 };
