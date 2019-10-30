@@ -112,6 +112,36 @@ contract('LinkedList - add', (accounts) => {
     });
 });
 
+contract('LinkedList - insert', (accounts) => {
+
+    let linkedList;
+    let headId;
+    let middleId;
+    let tailId;
+
+    beforeEach(async () => {
+        linkedList = await LinkedList.new();
+        tailId = (
+            await linkedList.addHead(300)
+        ).logs[0].args.id.toNumber();
+        middleId = (
+            await linkedList.addHead(200)
+        ).logs[0].args.id.toNumber();
+        headId = (
+            await linkedList.addHead(100)
+        ).logs[0].args.id.toNumber();
+    });
+
+    it('finds an id for given data.', async () => {
+        const headData = (await linkedList.findIdForData(100));
+        headData.toNumber().should.be.equal(headId);
+        const middleData = (await linkedList.findIdForData(200));
+        middleData.toNumber().should.be.equal(middleId);
+        const tailData = (await linkedList.findIdForData(300));
+        tailData.toNumber().should.be.equal(tailId);
+    });
+});
+
 /** @test {LinkedList} contract */
 contract('LinkedList - remove', (accounts) => {
 
@@ -208,7 +238,6 @@ contract('LinkedList - insert', (accounts) => {
         headId = (
             await linkedList.addHead(100)
         ).logs[0].args.id.toNumber();
-
     });
 
     it('inserts after the head.', async () => {

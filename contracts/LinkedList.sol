@@ -63,6 +63,18 @@ contract LinkedList {
         return oldTailObject.id;
     }
 
+    function findIdForData(uint256 _data)
+        public
+        view
+        returns (uint256)
+    {
+        Object memory object = objects[head];
+        while (object.data != _data) {
+            object = objects[object.next];
+        }
+        return object.id;
+    }
+
     function addHead(uint256 _data)
         public
         returns (bool)
