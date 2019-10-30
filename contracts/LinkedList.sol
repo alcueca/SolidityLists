@@ -9,8 +9,8 @@ contract LinkedList {
 
     event ObjectCreated(uint256 id, address data);
     event ObjectsLinked(uint256 prev, uint256 next);
-    event NewHead(uint256 id);
     event ObjectRemoved(uint256 id);
+    event NewHead(uint256 id);
 
     struct Object{
         uint256 id;

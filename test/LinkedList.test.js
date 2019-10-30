@@ -114,7 +114,7 @@ contract('LinkedList - add', (accounts) => {
     });
 });
 
-contract('LinkedList - insert', (accounts) => {
+contract('LinkedList - find', (accounts) => {
 
     let linkedList;
     let headId;
