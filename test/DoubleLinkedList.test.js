@@ -36,7 +36,7 @@ contract('DoubleLinkedList - add', (accounts) => {
         ).logs[0];
         objectEvent.args.id.toNumber().should.be.equal(1);
         objectEvent.args.next.toNumber().should.be.equal(0);
-        objectEvent.args.previous.toNumber().should.be.equal(0);
+        objectEvent.args.prev.toNumber().should.be.equal(0);
         objectEvent.args.data.toNumber().should.be.equal(100);
     });
 
@@ -81,7 +81,7 @@ contract('DoubleLinkedList - add', (accounts) => {
         ).logs[0];
         objectEvent.args.id.toNumber().should.be.equal(1);
         objectEvent.args.next.toNumber().should.be.equal(0);
-        objectEvent.args.previous.toNumber().should.be.equal(0);
+        objectEvent.args.prev.toNumber().should.be.equal(0);
         objectEvent.args.data.toNumber().should.be.equal(100);
     });
 

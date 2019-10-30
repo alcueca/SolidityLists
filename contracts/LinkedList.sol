@@ -99,39 +99,39 @@ contract LinkedList {
         }
         else {
             // Find object to remove
-            Object memory previousObject = objects[head];
-            while (previousObject.next != _id) {
-                // if (previousObject.next == 0) revert(); No need to check, we would revert anyway.
-                previousObject = objects[previousObject.next];
+            Object memory prevObject = objects[head];
+            while (prevObject.next != _id) {
+                // if (prevObject.next == 0) revert(); No need to check, we would revert anyway.
+                prevObject = objects[prevObject.next];
             }
-            removeObject = objects[previousObject.next];
-            // Link previous object to the rest of the list
-            previousObject.next = removeObject.next;
-            objects[previousObject.id] = previousObject;
+            removeObject = objects[prevObject.next];
+            // Link prev object to the rest of the list
+            prevObject.next = removeObject.next;
+            objects[prevObject.id] = prevObject;
         }
         assert (_id == removeObject.id);
         delete objects[removeObject.id];
         emit ObjectRemoved(_id);
     }
 
-    function insertAfter(uint256 _previousId, uint256 _data)
+    function insertAfter(uint256 _prevId, uint256 _data)
         public
         returns (bool)
     {
         // Find where to insert
-        Object memory previousObject = objects[head];
-        while (previousObject.id != _previousId) {
-            // if (previousObject.next == 0) revert(); No need to check, we will revert anyway.
-            previousObject = objects[previousObject.next];
+        Object memory prevObject = objects[head];
+        while (prevObject.id != _prevId) {
+            // if (prevObject.next == 0) revert(); No need to check, we will revert anyway.
+            prevObject = objects[prevObject.next];
         }
         // Insert new object
         uint256 newId = idCounter;
         idCounter += 1;
-        Object memory insertedObject = Object(newId, previousObject.next, _data);
+        Object memory insertedObject = Object(newId, prevObject.next, _data);
         objects[newId] = insertedObject;
-        // Link previous object to new object
-        previousObject.next = newId;
-        objects[previousObject.id] = previousObject;
+        // Link prev object to new object
+        prevObject.next = newId;
+        objects[prevObject.id] = prevObject;
         emit ObjectAdded(
             insertedObject.id,
             insertedObject.next,
@@ -148,19 +148,19 @@ contract LinkedList {
         }
         else {
             // Find where to insert
-            Object memory previousObject = objects[head];
-            while (previousObject.next != _nextId) {
-                // if (previousObject.next == 0) revert(); No need to check, we will revert anyway.
-                previousObject = objects[previousObject.next];
+            Object memory prevObject = objects[head];
+            while (prevObject.next != _nextId) {
+                // if (prevObject.next == 0) revert(); No need to check, we will revert anyway.
+                prevObject = objects[prevObject.next];
             }
             // Insert new object
             uint256 newId = idCounter;
             idCounter += 1;
-            Object memory insertedObject = Object(newId, previousObject.next, _data);
+            Object memory insertedObject = Object(newId, prevObject.next, _data);
             objects[newId] = insertedObject;
-            // Link previous object to new object
-            previousObject.next = newId;
-            objects[previousObject.id] = previousObject;
+            // Link prev object to new object
+            prevObject.next = newId;
+            objects[prevObject.id] = prevObject;
             emit ObjectAdded(
                 insertedObject.id,
                 insertedObject.next,

@@ -7,13 +7,13 @@ pragma solidity ^0.5.0;
  */
 contract DoubleLinkedList {
 
-    event ObjectAdded(uint256 id, uint256 next, uint256 previous, uint256 data);
+    event ObjectAdded(uint256 id, uint256 next, uint256 prev, uint256 data);
     event ObjectRemoved(uint256 id);
 
     struct Object{
         uint256 id;
         uint256 next;
-        uint256 previous;
+        uint256 prev;
         uint256 data;
     }
 
@@ -37,7 +37,7 @@ contract DoubleLinkedList {
         returns (uint256, uint256, uint256, uint256)
     {
         Object memory object = objects[_id];
-        return (object.id, object.next, object.previous, object.data);
+        return (object.id, object.next, object.prev, object.data);
     }
 
     function addHead(uint256 _data)
@@ -57,7 +57,7 @@ contract DoubleLinkedList {
         if (head != 0) {
             // If there is a next object link it to this one
             Object memory nextObject = objects[newObject.next];
-            nextObject.previous = newObject.id;
+            nextObject.prev = newObject.id;
             objects[nextObject.id] = nextObject;
         }
         else {
@@ -69,7 +69,7 @@ contract DoubleLinkedList {
         emit ObjectAdded(
             newObject.id,
             newObject.next,
-            newObject.previous,
+            newObject.prev,
             newObject.data
         );
     }
@@ -105,7 +105,7 @@ contract DoubleLinkedList {
             emit ObjectAdded(
                 newTail.id,
                 newTail.next,
-                newTail.previous,
+                newTail.prev,
                 newTail.data
             );
         }
@@ -120,13 +120,13 @@ contract DoubleLinkedList {
             removeObject = objects[head];
             head = removeObject.next;
             Object memory newHead = objects[head];
-            newHead.previous = 0;
+            newHead.prev = 0;
             objects[head] = newHead;
         }
         else if (tail == _id) {
             // Tail object is the one to remove
             removeObject = objects[tail];
-            tail = removeObject.previous;
+            tail = removeObject.prev;
             Object memory newTail = objects[tail];
             newTail.next = 0;
             objects[tail] = newTail;
@@ -135,12 +135,12 @@ contract DoubleLinkedList {
             // Find object to remove
             removeObject = objects[_id];
             Object memory nextObject = objects[removeObject.next];
-            Object memory previousObject = objects[removeObject.previous];
+            Object memory prevObject = objects[removeObject.prev];
 
-            // Link previous object to next object and viceversa
-            previousObject.next = removeObject.next;
-            nextObject.previous = removeObject.previous;
-            objects[previousObject.id] = previousObject;
+            // Link prev object to next object and viceversa
+            prevObject.next = removeObject.next;
+            nextObject.prev = removeObject.prev;
+            objects[prevObject.id] = prevObject;
             objects[nextObject.id] = nextObject;
         }
         assert (_id == removeObject.id);
@@ -148,40 +148,40 @@ contract DoubleLinkedList {
         emit ObjectRemoved(_id);
     }
 
-    function insertAfter(uint256 _previousId, uint256 _data)
+    function insertAfter(uint256 _prevId, uint256 _data)
         public
         returns (bool)
     {
         // Find where to insert
-        Object memory previousObject = objects[head];
-        while (previousObject.id != _previousId) {
-            // if (previousObject.next == 0) revert(); No need to check, we will revert anyway.
-            previousObject = objects[previousObject.next];
+        Object memory prevObject = objects[head];
+        while (prevObject.id != _prevId) {
+            // if (prevObject.next == 0) revert(); No need to check, we will revert anyway.
+            prevObject = objects[prevObject.next];
         }
         uint256 newId = idCounter;
         idCounter += 1;
         // Insert new object
         Object memory insertedObject = Object(
             newId,
-            previousObject.next,
-            previousObject.id,
+            prevObject.next,
+            prevObject.id,
             _data
         );
         objects[insertedObject.id] = insertedObject;
         // If not inserting at the tail link next object back to inserted one.
         Object memory nextObject;
-        if (previousObject.id != tail) {
-            nextObject = objects[previousObject.next];
-            nextObject.previous = newId;
+        if (prevObject.id != tail) {
+            nextObject = objects[prevObject.next];
+            nextObject.prev = newId;
             objects[nextObject.id] = nextObject;
         }
-        // Link previous object to new object
-        previousObject.next = insertedObject.id;
-        objects[previousObject.id] = previousObject;
+        // Link prev object to new object
+        prevObject.next = insertedObject.id;
+        objects[prevObject.id] = prevObject;
         emit ObjectAdded(
             insertedObject.id,
             insertedObject.next,
-            insertedObject.previous,
+            insertedObject.prev,
             insertedObject.data
         );
     }
@@ -195,32 +195,32 @@ contract DoubleLinkedList {
         }
         else {
             // Find where to insert
-            Object memory previousObject = objects[head];
-            while (previousObject.next != _nextId) {
-                // if (previousObject.next == 0) revert(); No need to check, we will revert anyway.
-                previousObject = objects[previousObject.next];
+            Object memory prevObject = objects[head];
+            while (prevObject.next != _nextId) {
+                // if (prevObject.next == 0) revert(); No need to check, we will revert anyway.
+                prevObject = objects[prevObject.next];
             }
             // Insert new object
             uint256 newId = idCounter;
             idCounter += 1;
             Object memory insertedObject = Object(
                 newId,
-                previousObject.next,
-                previousObject.id,
+                prevObject.next,
+                prevObject.id,
                 _data
             );
             objects[newId] = insertedObject;
             // Link next object back to inserted one.
-            Object memory nextObject = objects[previousObject.next];
-            nextObject.previous = newId;
+            Object memory nextObject = objects[prevObject.next];
+            nextObject.prev = newId;
             objects[nextObject.id] = nextObject;
-            // Link previous object to new object
-            previousObject.next = newId;
-            objects[previousObject.id] = previousObject;
+            // Link prev object to new object
+            prevObject.next = newId;
+            objects[prevObject.id] = prevObject;
             emit ObjectAdded(
                 insertedObject.id,
                 insertedObject.next,
-                insertedObject.previous,
+                insertedObject.prev,
                 insertedObject.data
             );
         }
