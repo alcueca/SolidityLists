@@ -7,7 +7,7 @@ pragma solidity ^0.5.0;
  */
 contract LinkedList {
 
-    event ObjectCreated(uint256 id, uint256 next, uint256 data);
+    event ObjectCreated(uint256 id, uint256 data);
     event ObjectsLinked(uint256 prev, uint256 next);
     event NewHead(uint256 id);
     event ObjectRemoved(uint256 id);
@@ -148,7 +148,6 @@ contract LinkedList {
         objects[object.id] = object;
         emit ObjectCreated(
             object.id,
-            object.next,
             object.data
         );
         return object.id;

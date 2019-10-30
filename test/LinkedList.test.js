@@ -34,7 +34,6 @@ contract('LinkedList - add', (accounts) => {
             await linkedList.addHead(100)
         ).logs[0];
         objectEvent.args.id.toNumber().should.be.equal(1);
-        objectEvent.args.next.toNumber().should.be.equal(0);
         objectEvent.args.data.toNumber().should.be.equal(100);
     });
 
@@ -75,7 +74,6 @@ contract('LinkedList - add', (accounts) => {
             await linkedList.addTail(100)
         ).logs[0];
         objectEvent.args.id.toNumber().should.be.equal(1);
-        objectEvent.args.next.toNumber().should.be.equal(0);
         objectEvent.args.data.toNumber().should.be.equal(100);
     });
 
