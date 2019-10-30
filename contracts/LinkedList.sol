@@ -81,8 +81,7 @@ contract LinkedList {
     {
         uint256 objectId = _createObject(_data);
         _link(objectId, head);
-        head = objectId;
-        emit NewHead(objectId);
+        _setHead(objectId);
     }
 
     function addTail(address _data)
@@ -104,8 +103,7 @@ contract LinkedList {
     {
         Object memory removeObject = objects[_id];
         if (head == _id) {
-            head = removeObject.next;
-            emit NewHead(_id);
+            _setHead(removeObject.next);
         }
         else {
             uint256 prevObjectId = findPrevId(_id);
@@ -136,6 +134,13 @@ contract LinkedList {
             uint256 prevId = findPrevId(_nextId);
             insertAfter(prevId, _data);
         }
+    }
+
+    function _setHead(uint256 _id)
+        internal
+    {
+        head = _id;
+        emit NewHead(_id);
     }
 
     function _createObject(address _data)
