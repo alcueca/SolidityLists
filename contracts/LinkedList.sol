@@ -7,7 +7,7 @@ pragma solidity ^0.5.0;
  */
 contract LinkedList {
 
-    event ObjectCreated(uint256 id, uint256 data);
+    event ObjectCreated(uint256 id, address data);
     event ObjectsLinked(uint256 prev, uint256 next);
     event NewHead(uint256 id);
     event ObjectRemoved(uint256 id);
@@ -15,7 +15,7 @@ contract LinkedList {
     struct Object{
         uint256 id;
         uint256 next;
-        uint256 data;
+        address data;
     }
 
     uint256 public head;
@@ -33,7 +33,7 @@ contract LinkedList {
     function get(uint256 _id)
         public
         view
-        returns (uint256, uint256, uint256)
+        returns (uint256, uint256, address)
     {
         Object memory object = objects[_id];
         return (object.id, object.next, object.data);
@@ -63,7 +63,7 @@ contract LinkedList {
         return oldTailObject.id;
     }
 
-    function findIdForData(uint256 _data)
+    function findIdForData(address _data)
         public
         view
         returns (uint256)
@@ -75,7 +75,7 @@ contract LinkedList {
         return object.id;
     }
 
-    function addHead(uint256 _data)
+    function addHead(address _data)
         public
         returns (bool)
     {
@@ -85,7 +85,7 @@ contract LinkedList {
         emit NewHead(objectId);
     }
 
-    function addTail(uint256 _data)
+    function addTail(address _data)
         public
         returns (bool)
     {
@@ -115,7 +115,7 @@ contract LinkedList {
         emit ObjectRemoved(_id);
     }
 
-    function insertAfter(uint256 _prevId, uint256 _data)
+    function insertAfter(uint256 _prevId, address _data)
         public
         returns (bool)
     {
@@ -125,7 +125,7 @@ contract LinkedList {
         _link(prevObject.id, newObjectId);
     }
 
-    function insertBefore(uint256 _nextId, uint256 _data)
+    function insertBefore(uint256 _nextId, address _data)
         public
         returns (bool)
     {
@@ -138,7 +138,7 @@ contract LinkedList {
         }
     }
 
-    function _createObject(uint256 _data)
+    function _createObject(address _data)
         internal
         returns (uint256)
     {
