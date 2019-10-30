@@ -7,7 +7,9 @@ pragma solidity ^0.5.0;
  */
 contract LinkedList {
 
-    event ObjectAdded(uint256 id, uint256 next, uint256 data);
+    event ObjectCreated(uint256 id, uint256 next, uint256 data);
+    event ObjectsLinked(uint256 prev, uint256 next);
+    event NewHead(uint256 id);
     event ObjectRemoved(uint256 id);
 
     struct Object{
@@ -37,23 +39,40 @@ contract LinkedList {
         return (object.id, object.next, object.data);
     }
 
+    function findPrevId(uint256 _id)
+        public
+        view
+        returns (uint256)
+    {
+        Object memory prevObject = objects[head];
+        while (prevObject.next != _id) {
+            prevObject = objects[prevObject.next];
+        }
+        return prevObject.id;
+    }
+
+    function findTailId()
+        public
+        view
+        returns (uint256)
+    {
+        Object memory oldTailObject = objects[head];
+        while (oldTailObject.next != 0) {
+            oldTailObject = objects[oldTailObject.next];
+        }
+        return oldTailObject.id;
+    }
+
     function addHead(uint256 _data)
         public
         returns (bool)
     {
-        uint256 newId = idCounter;
-        idCounter += 1;
-        Object memory object = Object(newId, head, _data);
-        objects[object.id] = object;
-        head = object.id;
-        emit ObjectAdded(
-            object.id,
-            object.next,
-            object.data
-        );
+        uint256 objectId = _createObject(_data);
+        _link(objectId, head);
+        head = objectId;
+        emit NewHead(objectId);
     }
 
-    // We use the same variable to generate ids and to keep track of object count
     function addTail(uint256 _data)
         public
         returns (bool)
@@ -62,54 +81,24 @@ contract LinkedList {
             addHead(_data);
         }
         else {
-            // Find tail
-            Object memory tailObject = objects[head];
-            while (tailObject.next != 0) {
-                tailObject = objects[tailObject.next];
-            }
-
-            // Append new tail
-            uint256 newId = idCounter;
-            idCounter += 1;
-            Object memory newTail = Object(newId, 0, _data);
-            objects[newTail.id] = newTail;
-
-            // Link old tail to new one
-            tailObject.next = newTail.id;
-            objects[tailObject.id] = tailObject;
-
-            // Finish
-            emit ObjectAdded(
-                newTail.id,
-                newTail.next,
-                newTail.data
-            );
+            uint256 oldTailId = findTailId();
+            uint256 newTailId = _createObject(_data);
+            _link(oldTailId, newTailId);
         }
     }
 
     function remove(uint256 _id)
         public
     {
-        Object memory removeObject;
+        Object memory removeObject = objects[_id];
         if (head == _id) {
-            // Head object is the one to remove
-            removeObject = objects[head];
             head = removeObject.next;
-
+            emit NewHead(_id);
         }
         else {
-            // Find object to remove
-            Object memory prevObject = objects[head];
-            while (prevObject.next != _id) {
-                // if (prevObject.next == 0) revert(); No need to check, we would revert anyway.
-                prevObject = objects[prevObject.next];
-            }
-            removeObject = objects[prevObject.next];
-            // Link prev object to the rest of the list
-            prevObject.next = removeObject.next;
-            objects[prevObject.id] = prevObject;
+            uint256 prevObjectId = findPrevId(_id);
+            _link(prevObjectId, removeObject.next);
         }
-        assert (_id == removeObject.id);
         delete objects[removeObject.id];
         emit ObjectRemoved(_id);
     }
@@ -118,25 +107,10 @@ contract LinkedList {
         public
         returns (bool)
     {
-        // Find where to insert
-        Object memory prevObject = objects[head];
-        while (prevObject.id != _prevId) {
-            // if (prevObject.next == 0) revert(); No need to check, we will revert anyway.
-            prevObject = objects[prevObject.next];
-        }
-        // Insert new object
-        uint256 newId = idCounter;
-        idCounter += 1;
-        Object memory insertedObject = Object(newId, prevObject.next, _data);
-        objects[newId] = insertedObject;
-        // Link prev object to new object
-        prevObject.next = newId;
-        objects[prevObject.id] = prevObject;
-        emit ObjectAdded(
-            insertedObject.id,
-            insertedObject.next,
-            insertedObject.data
-        );
+        Object memory prevObject = objects[_prevId];
+        uint256 newObjectId = _createObject(_data);
+        _link(newObjectId, prevObject.next);
+        _link(prevObject.id, newObjectId);
     }
 
     function insertBefore(uint256 _nextId, uint256 _data)
@@ -147,25 +121,31 @@ contract LinkedList {
             addHead(_data);
         }
         else {
-            // Find where to insert
-            Object memory prevObject = objects[head];
-            while (prevObject.next != _nextId) {
-                // if (prevObject.next == 0) revert(); No need to check, we will revert anyway.
-                prevObject = objects[prevObject.next];
-            }
-            // Insert new object
-            uint256 newId = idCounter;
-            idCounter += 1;
-            Object memory insertedObject = Object(newId, prevObject.next, _data);
-            objects[newId] = insertedObject;
-            // Link prev object to new object
-            prevObject.next = newId;
-            objects[prevObject.id] = prevObject;
-            emit ObjectAdded(
-                insertedObject.id,
-                insertedObject.next,
-                insertedObject.data
-            );
+            uint256 prevId = findPrevId(_nextId);
+            insertAfter(prevId, _data);
         }
+    }
+
+    function _createObject(uint256 _data)
+        internal
+        returns (uint256)
+    {
+        uint256 newId = idCounter;
+        idCounter += 1;
+        Object memory object = Object(newId, 0, _data);
+        objects[object.id] = object;
+        emit ObjectCreated(
+            object.id,
+            object.next,
+            object.data
+        );
+        return object.id;
+    }
+
+    function _link(uint256 _prevId, uint256 _nextId)
+        internal
+    {
+        objects[_prevId].next = _nextId;
+        emit ObjectsLinked(_prevId, _nextId);
     }
 }

@@ -137,7 +137,7 @@ contract('LinkedList - remove', (accounts) => {
     it('removes the head.', async () => {
         const removedId = (
             await linkedList.remove(headId)
-        ).logs[0].args.id.toNumber();
+        ).logs[1].args.id.toNumber();
         removedId.should.be.equal(headId);
         ((await linkedList.head.call()).toNumber()).should.be.equal(middleId);
 
@@ -155,7 +155,7 @@ contract('LinkedList - remove', (accounts) => {
     it('removes the tail.', async () => {
         const removedId = (
             await linkedList.remove(tailId)
-        ).logs[0].args.id.toNumber();
+        ).logs[1].args.id.toNumber();
         removedId.should.be.equal(tailId);
         ((await linkedList.head.call()).toNumber()).should.be.equal(headId);
 
@@ -173,7 +173,7 @@ contract('LinkedList - remove', (accounts) => {
     it('removes the middle.', async () => {
         const removedId = (
             await linkedList.remove(middleId)
-        ).logs[0].args.id.toNumber();
+        ).logs[1].args.id.toNumber();
         removedId.should.be.equal(middleId);
         ((await linkedList.head.call()).toNumber()).should.be.equal(headId);
 
